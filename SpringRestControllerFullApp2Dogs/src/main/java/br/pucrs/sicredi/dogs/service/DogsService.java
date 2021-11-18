@@ -30,7 +30,7 @@ public class DogsService {
     	else {
     		List<Dog> res = mockDogProvider.getDogs();
     		if (res.isEmpty())
-    			throw new DogsNotFoundException(); 
+    			throw new DogsNotFoundException("Lista de cachorros vazia!"); 
     		else 
     			return res;
     	}

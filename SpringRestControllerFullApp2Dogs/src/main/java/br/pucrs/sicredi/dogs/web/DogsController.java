@@ -28,21 +28,9 @@ public class DogsController {
 	@Autowired private final DogsService service;
 
 	@GetMapping
-	public ResponseEntity<List<Dog>> getDogs() {
-		List<Dog> dogs;
-
-		try {
-			dogs = service.getDogs();
-		} 
-		catch (DogsServiceException ex) {
-			return new ResponseEntity<>(null, null, HttpStatus.INTERNAL_SERVER_ERROR);
-		} 
-		catch (DogsNotFoundException ex) {
-			return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
-		}
-		
-		return new ResponseEntity<>(dogs, HttpStatus.OK);
-	}
+	    public ResponseEntity<List<Dog>> getDogs() {
+	        return new ResponseEntity<>(service.getDogs(), HttpStatus.OK);
+	    }
 
 	@PostMapping
 	public void postDogs(@RequestBody DogDto dto) {
