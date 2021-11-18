@@ -2,10 +2,14 @@ package br.pucrs.sicredi.dogs.web;
 
 import br.pucrs.sicredi.dogs.model.DogDto;
 import br.pucrs.sicredi.dogs.repo.Dog;
+import br.pucrs.sicredi.dogs.service.DogsNotFoundException;
 import br.pucrs.sicredi.dogs.service.DogsService;
+import br.pucrs.sicredi.dogs.service.DogsServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,25 +25,37 @@ import java.util.List;
 @RequiredArgsConstructor   //do Lombok
 @Setter                    //do Lombok
 public class DogsController {
-    @Autowired private final DogsService service;
+	@Autowired private final DogsService service;
 
-    @GetMapping
-    public List<Dog> getDogs() {
-        return service.getDogs();
-    }
+	@GetMapping
+	public ResponseEntity<List<Dog>> getDogs() {
+		List<Dog> dogs;
 
-    @PostMapping
-    public void postDogs(@RequestBody DogDto dto) {
-        service.add(dto);
-    }
+		try {
+			dogs = service.getDogs();
+		} 
+		catch (DogsServiceException ex) {
+			return new ResponseEntity<>(null, null, HttpStatus.INTERNAL_SERVER_ERROR);
+		} 
+		catch (DogsNotFoundException ex) {
+			return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<>(dogs, HttpStatus.OK);
+	}
 
-    @GetMapping("/{id}")
-    public Dog getById(@PathVariable(required = true) long id) {
-        return service.getDogById(id);
-    }
+	@PostMapping
+	public void postDogs(@RequestBody DogDto dto) {
+		service.add(dto);
+	}
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable(required = true) long id) {
-        service.delete(id);
-    }
+	@GetMapping("/{id}")
+	public Dog getById(@PathVariable(required = true) long id) {
+		return service.getDogById(id);
+	}
+
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable(required = true) long id) {
+		service.delete(id);
+	}
 }

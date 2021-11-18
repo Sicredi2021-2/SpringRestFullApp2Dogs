@@ -24,8 +24,16 @@ public class DogsService {
         mockDogProvider.delete(id);
     }
 
-    public List<Dog> getDogs() {
-        return mockDogProvider.getDogs();
+    public List<Dog> getDogs()  {
+    	if (mockDogProvider == null)
+    		throw new DogsServiceException();
+    	else {
+    		List<Dog> res = mockDogProvider.getDogs();
+    		if (res.isEmpty())
+    			throw new DogsNotFoundException(); 
+    		else 
+    			return res;
+    	}
     }
 
     public Dog getDogById(long id) {
